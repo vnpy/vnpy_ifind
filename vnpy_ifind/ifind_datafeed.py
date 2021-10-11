@@ -6,7 +6,7 @@ from iFinDPy import (
     THS_iFinDLogin,
     THS_HQ,
     THS_HF,
-    
+    THSData
 )
 
 from vnpy.trader.setting import SETTINGS
@@ -59,29 +59,37 @@ class IfindDatafeed(BaseDatafeed):
 
     def query_bar_history(self, req: HistoryRequest) -> Optional[List[BarData]]:
         """查询K线数据"""
+        # 检查是否登录
         if not self.inited:
             self.init()
 
-        ifind_exchange = EXCHANGE_MAP[req.exchange]
-        ifind_symbol = f"{req.symbol}.{ifind_exchange}"
+        # 生成iFinD合约代码
+        ifind_exchange: str = EXCHANGE_MAP[req.exchange]
+        ifind_symbol: str = f"{req.symbol}.{ifind_exchange}"
 
-        shift = SHIFT_MAP.get(req.interval, None)
-        indicators = "open;high;low;close;volume;amount;openInterest"
+        # 计算时间戳平移值
+        shift: timedelta = SHIFT_MAP.get(req.interval, None)
 
+        # 查询数据内容
+        indicators: str = "open;high;low;close;volume;amount;openInterest"
+
+        # 日线数据
         if req.interval == Interval.DAILY:
-            params = "Fill:Original"
-            result = THS_HQ(
+            params: str = "Fill:Original"
+            result: THSData = THS_HQ(
                 ifind_symbol,
                 indicators,
                 params,
                 req.start.strftime("%Y-%m-%d %H:%M:%S"),
                 req.end.strftime("%Y-%m-%d %H:%M:%S"),
             )
+        # 日内数据
         else:
-            ifind_interval = INTERVAL_MAP[req.interval]
-            params = f"Fill:Original,Interval:{ifind_interval}"
+            # 生成iFinD数据周期
+            ifind_interval: str = INTERVAL_MAP[req.interval]
+            params: str = f"Fill:Original,Interval:{ifind_interval}"
 
-            result = THS_HF(
+            result: THSData = THS_HF(
                 ifind_symbol,
                 indicators,
                 params,
@@ -89,24 +97,31 @@ class IfindDatafeed(BaseDatafeed):
                 req.end.strftime("%Y-%m-%d %H:%M:%S"),
             )
 
+        # 如果报错则直接返回空值
         if result.errorcode:
             return []
 
+        # 解析成K线数据
         bars: List[BarData] = []
+
         for tp in result.data.itertuples():
+            # 生成时间戳
             if ":" in tp.time:
                 dt = datetime.strptime(tp.time, "%Y-%m-%d %H:%M")
             else:
                 dt = datetime.strptime(tp.time, "%Y-%m-%d")
 
+            # 检查时间戳平移
             if shift:
                 dt -= shift
 
+            # 获取持仓量
             if tp.openInterest:
                 open_interest = tp.openInterest
             else:
                 open_interest = 0
 
+            # 生成K线对象
             bar = BarData(
                 symbol=req.symbol,
                 exchange=req.exchange,
