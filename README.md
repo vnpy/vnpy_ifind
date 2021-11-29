@@ -1,4 +1,4 @@
-# vn.py框架的同花顺iFinD数据服务接口**
+# vn.py框架的同花顺iFinD数据服务接口
 
 <p align="center">
   <img src ="https://vnpy.oss-cn-shanghai.aliyuncs.com/vnpy-logo.png"/>
@@ -24,7 +24,7 @@
   * SSE：上海证券交易所
   * SZSE：深圳证券交易所
 
-注意：需要购买相应的数据服务权限，可以通过[该页面](http://ft.10jqka.com.cn/)购买。
+注意：需要购买相应的数据服务权限才能获得iFinDPy包，可以通过[该页面](http://ft.10jqka.com.cn/)购买。
 
 
 ## 安装
