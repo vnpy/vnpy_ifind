@@ -1,4 +1,4 @@
-# vn.py框架的同花顺iFinD数据服务接口
+# VeighNa框架的同花顺iFinD数据服务接口
 
 <p align="center">
   <img src ="https://vnpy.oss-cn-shanghai.aliyuncs.com/vnpy-logo.png"/>
@@ -29,7 +29,7 @@
 
 ## 安装
 
-安装需要基于2.7.0版本以上的[VN Studio](https://www.vnpy.com)。
+安装环境推荐基于3.0.0版本以上的【[**VeighNa Studio**](https://www.vnpy.com)】。
 
 直接使用pip命令：
 
@@ -38,8 +38,8 @@ pip install vnpy_ifind
 ```
 
 
-或者下载解压后在cmd中运行：
+或者下载源代码后，解压后在cmd中运行：
 
 ```
-python setup.py install
+pip install .
 ```
