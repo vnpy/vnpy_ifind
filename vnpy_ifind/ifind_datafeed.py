@@ -24,6 +24,7 @@ EXCHANGE_MAP = {
     Exchange.SHFE: "SHF",
     Exchange.CZCE: "CZC",
     Exchange.DCE: "DCE",
+    Exchange.INE: "SHF",
 }
 
 INTERVAL_MAP = {
