@@ -1,6 +1,5 @@
 from datetime import timedelta, datetime
 from typing import List, Optional
-from pytz import timezone
 
 from iFinDPy import (
     THS_iFinDLogin,
@@ -13,9 +12,10 @@ from vnpy.trader.setting import SETTINGS
 from vnpy.trader.constant import Exchange, Interval
 from vnpy.trader.object import BarData, HistoryRequest
 from vnpy.trader.datafeed import BaseDatafeed
+from vnpy.trader.utility import ZoneInfo
 
 
-CHINA_TZ = timezone("Asia/Shanghai")
+CHINA_TZ = ZoneInfo("Asia/Shanghai")
 
 EXCHANGE_MAP = {
     Exchange.SSE: "SH",
@@ -125,7 +125,7 @@ class IfindDatafeed(BaseDatafeed):
             bar = BarData(
                 symbol=req.symbol,
                 exchange=req.exchange,
-                datetime=CHINA_TZ.localize(dt),
+                datetime=dt.replace(tzinfo=CHINA_TZ),
                 interval=req.interval,
                 open_price=tp.open,
                 high_price=tp.high,
