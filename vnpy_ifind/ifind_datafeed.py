@@ -1,5 +1,5 @@
 from datetime import timedelta, datetime
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from iFinDPy import (
     THS_iFinDLogin,
@@ -17,24 +17,27 @@ from vnpy.trader.utility import ZoneInfo
 
 CHINA_TZ = ZoneInfo("Asia/Shanghai")
 
-EXCHANGE_MAP = {
+EXCHANGE_MAP: Dict[Exchange, str] = {
     Exchange.SSE: "SH",
     Exchange.SZSE: "SZ",
     Exchange.CFFEX: "CFE",
     Exchange.SHFE: "SHF",
     Exchange.CZCE: "CZC",
     Exchange.DCE: "DCE",
+    Exchange.INE: "SHF",
 }
 
-INTERVAL_MAP = {
+INTERVAL_MAP: Dict[Interval, str] = {
     Interval.MINUTE: "1",
     Interval.HOUR: "60"
 }
 
-SHIFT_MAP = {
+SHIFT_MAP: Dict[Interval, timedelta] = {
     Interval.MINUTE: timedelta(minutes=1),
     Interval.HOUR: timedelta(hours=1),
 }
+
+CHINA_TZ = timezone("Asia/Shanghai")
 
 
 class IfindDatafeed(BaseDatafeed):
@@ -45,7 +48,7 @@ class IfindDatafeed(BaseDatafeed):
         self.username: str = SETTINGS["datafeed.username"]
         self.password: str = SETTINGS["datafeed.password"]
 
-        self.inited = False
+        self.inited: bool = False
 
     def init(self) -> bool:
         """初始化"""
@@ -65,7 +68,7 @@ class IfindDatafeed(BaseDatafeed):
 
         # 生成iFinD合约代码
         ifind_exchange: str = EXCHANGE_MAP[req.exchange]
-        ifind_symbol: str = f"{req.symbol}.{ifind_exchange}"
+        ifind_symbol: str = f"{req.symbol.upper()}.{ifind_exchange}"
 
         # 计算时间戳平移值
         shift: timedelta = SHIFT_MAP.get(req.interval, None)
@@ -107,9 +110,9 @@ class IfindDatafeed(BaseDatafeed):
         for tp in result.data.itertuples():
             # 生成时间戳
             if ":" in tp.time:
-                dt = datetime.strptime(tp.time, "%Y-%m-%d %H:%M")
+                dt: datetime = datetime.strptime(tp.time, "%Y-%m-%d %H:%M")
             else:
-                dt = datetime.strptime(tp.time, "%Y-%m-%d")
+                dt: datetime = datetime.strptime(tp.time, "%Y-%m-%d")
 
             # 检查时间戳平移
             if shift:
@@ -122,7 +125,7 @@ class IfindDatafeed(BaseDatafeed):
                 open_interest = 0
 
             # 生成K线对象
-            bar = BarData(
+            bar: BarData = BarData(
                 symbol=req.symbol,
                 exchange=req.exchange,
                 datetime=dt.replace(tzinfo=CHINA_TZ),
