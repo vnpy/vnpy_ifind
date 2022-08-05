@@ -37,8 +37,6 @@ SHIFT_MAP: Dict[Interval, timedelta] = {
     Interval.HOUR: timedelta(hours=1),
 }
 
-CHINA_TZ = timezone("Asia/Shanghai")
-
 
 class IfindDatafeed(BaseDatafeed):
     """同花顺iFinD数据服务接口"""
