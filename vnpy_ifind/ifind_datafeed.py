@@ -22,6 +22,7 @@ EXCHANGE_MAP: Dict[Exchange, str] = {
     Exchange.SHFE: "SHF",
     Exchange.CZCE: "CZC",
     Exchange.DCE: "DCE",
+    Exchange.INE: "SHF",
 }
 
 INTERVAL_MAP: Dict[Interval, str] = {
@@ -65,7 +66,7 @@ class IfindDatafeed(BaseDatafeed):
 
         # 生成iFinD合约代码
         ifind_exchange: str = EXCHANGE_MAP[req.exchange]
-        ifind_symbol: str = f"{req.symbol}.{ifind_exchange}"
+        ifind_symbol: str = f"{req.symbol.upper()}.{ifind_exchange}"
 
         # 计算时间戳平移值
         shift: timedelta = SHIFT_MAP.get(req.interval, None)
