@@ -85,7 +85,7 @@ class IfindDatafeed(BaseDatafeed):
                 req.end.strftime("%Y-%m-%d %H:%M:%S"),
             )
         # 日内数据
-        else:
+        elif req.interval in INTERVAL_MAP:
             # 生成iFinD数据周期
             ifind_interval: str = INTERVAL_MAP[req.interval]
             params: str = f"Fill:Original,Interval:{ifind_interval}"
@@ -97,6 +97,9 @@ class IfindDatafeed(BaseDatafeed):
                 req.start.strftime("%Y-%m-%d %H:%M:%S"),
                 req.end.strftime("%Y-%m-%d %H:%M:%S"),
             )
+        # 其他周期数据
+        else:
+            return []
 
         # 如果报错则直接返回空值
         if result.errorcode:
