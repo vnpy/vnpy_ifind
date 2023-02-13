@@ -63,7 +63,7 @@ class IfindDatafeed(BaseDatafeed):
 
         code: int = THS_iFinDLogin(self.username, self.password)
         if code:
-            output("iFinD数据服务初始化失败，错误码：{code}")
+            output(f"iFinD数据服务初始化失败，错误码：{code}")
             return False
         return True
 
