@@ -1,5 +1,5 @@
 from datetime import timedelta, datetime
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Callable
 
 from iFinDPy import (
     THS_iFinDLogin,
@@ -48,21 +48,30 @@ class IfindDatafeed(BaseDatafeed):
 
         self.inited: bool = False
 
-    def init(self) -> bool:
+    def init(self, output: Callable = print) -> bool:
         """初始化"""
         if self.inited:
             return True
+        
+        if not self.username:
+            output("iFinD数据服务初始化失败，用户名为空！")
+            return False
+
+        if not self.password:
+            output("iFinD数据服务初始化失败，密码为空！")
+            return False
 
         code: int = THS_iFinDLogin(self.username, self.password)
         if code:
+            output(f"iFinD数据服务初始化失败，错误码：{code}")
             return False
         return True
 
-    def query_bar_history(self, req: HistoryRequest) -> Optional[List[BarData]]:
+    def query_bar_history(self, req: HistoryRequest, output: Callable = print) -> Optional[List[BarData]]:
         """查询K线数据"""
         # 检查是否登录
         if not self.inited:
-            self.init()
+            self.init(output)
 
         # 生成iFinD合约代码
         ifind_exchange: str = EXCHANGE_MAP[req.exchange]
@@ -103,6 +112,7 @@ class IfindDatafeed(BaseDatafeed):
 
         # 如果报错则直接返回空值
         if result.errorcode:
+            output(f"历史数据查询失败，错误码：{result.errorcode}")
             return []
 
         # 解析成K线数据
