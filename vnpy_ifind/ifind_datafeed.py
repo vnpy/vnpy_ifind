@@ -65,6 +65,8 @@ class IfindDatafeed(BaseDatafeed):
         if code:
             output(f"iFinD数据服务初始化失败，错误码：{code}")
             return False
+
+        self.inited = True
         return True
 
     def query_bar_history(self, req: HistoryRequest, output: Callable = print) -> Optional[List[BarData]]:
