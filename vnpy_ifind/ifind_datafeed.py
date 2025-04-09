@@ -80,7 +80,7 @@ class IfindDatafeed(BaseDatafeed):
         ifind_symbol: str = f"{req.symbol.upper()}.{ifind_exchange}"
 
         # 计算时间戳平移值
-        shift: timedelta = SHIFT_MAP.get(req.interval, None)
+        shift: timedelta | None = SHIFT_MAP.get(req.interval, None)
 
         # 查询数据内容
         indicators: str = "open;high;low;close;volume;amount;openInterest"
@@ -99,9 +99,9 @@ class IfindDatafeed(BaseDatafeed):
         elif req.interval in INTERVAL_MAP:
             # 生成iFinD数据周期
             ifind_interval: str = INTERVAL_MAP[req.interval]
-            params: str = f"Fill:Original,Interval:{ifind_interval}"
+            params = f"Fill:Original,Interval:{ifind_interval}"
 
-            result: THSData = THS_HF(
+            result = THS_HF(
                 ifind_symbol,
                 indicators,
                 params,
@@ -125,7 +125,7 @@ class IfindDatafeed(BaseDatafeed):
             if ":" in tp.time:
                 dt: datetime = datetime.strptime(tp.time, "%Y-%m-%d %H:%M")
             else:
-                dt: datetime = datetime.strptime(tp.time, "%Y-%m-%d")
+                dt = datetime.strptime(tp.time, "%Y-%m-%d")
 
             # 检查时间戳平移
             if shift:
