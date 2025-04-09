@@ -1,5 +1,5 @@
 from datetime import timedelta, datetime
-from typing import Dict, List, Optional, Callable
+from collections.abc import Callable
 
 from iFinDPy import (
     THS_iFinDLogin,
@@ -17,7 +17,7 @@ from vnpy.trader.utility import ZoneInfo
 
 CHINA_TZ = ZoneInfo("Asia/Shanghai")
 
-EXCHANGE_MAP: Dict[Exchange, str] = {
+EXCHANGE_MAP: dict[Exchange, str] = {
     Exchange.SSE: "SH",
     Exchange.SZSE: "SZ",
     Exchange.CFFEX: "CFE",
@@ -27,12 +27,12 @@ EXCHANGE_MAP: Dict[Exchange, str] = {
     Exchange.INE: "SHF",
 }
 
-INTERVAL_MAP: Dict[Interval, str] = {
+INTERVAL_MAP: dict[Interval, str] = {
     Interval.MINUTE: "1",
     Interval.HOUR: "60"
 }
 
-SHIFT_MAP: Dict[Interval, timedelta] = {
+SHIFT_MAP: dict[Interval, timedelta] = {
     Interval.MINUTE: timedelta(minutes=1),
     Interval.HOUR: timedelta(hours=1),
 }
@@ -52,7 +52,7 @@ class IfindDatafeed(BaseDatafeed):
         """初始化"""
         if self.inited:
             return True
-        
+
         if not self.username:
             output("iFinD数据服务初始化失败，用户名为空！")
             return False
@@ -69,7 +69,7 @@ class IfindDatafeed(BaseDatafeed):
         self.inited = True
         return True
 
-    def query_bar_history(self, req: HistoryRequest, output: Callable = print) -> Optional[List[BarData]]:
+    def query_bar_history(self, req: HistoryRequest, output: Callable = print) -> list[BarData] | None:
         """查询K线数据"""
         # 检查是否登录
         if not self.inited:
@@ -118,7 +118,7 @@ class IfindDatafeed(BaseDatafeed):
             return []
 
         # 解析成K线数据
-        bars: List[BarData] = []
+        bars: list[BarData] = []
 
         for tp in result.data.itertuples():
             # 生成时间戳
