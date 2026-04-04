@@ -85,9 +85,14 @@ class IfindDatafeed(BaseDatafeed):
         # 查询数据内容
         indicators: str = "open;high;low;close;volume;amount;openInterest"
 
+        params: str = "Fill:Original"
+
+        # 对于股票查询前复权K线数据
+        if ifind_symbol.endswith(".SH") or ifind_symbol.endswith(".SZ"):
+            params += ",CPS:2"    # 前复权（分红再投）
+
         # 日线数据
         if req.interval == Interval.DAILY:
-            params: str = "Fill:Original"
             result: THSData = THS_HQ(
                 ifind_symbol,
                 indicators,
@@ -99,7 +104,7 @@ class IfindDatafeed(BaseDatafeed):
         elif req.interval in INTERVAL_MAP:
             # 生成iFinD数据周期
             ifind_interval: str = INTERVAL_MAP[req.interval]
-            params = f"Fill:Original,Interval:{ifind_interval}"
+            params += f",Interval:{ifind_interval}"
 
             result = THS_HF(
                 ifind_symbol,
