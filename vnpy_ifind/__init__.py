@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""同花顺iFinD历史数据服务。"""
 
 from .ifind_datafeed import IfindDatafeed as Datafeed
 
