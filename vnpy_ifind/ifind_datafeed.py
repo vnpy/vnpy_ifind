@@ -2,6 +2,7 @@
 
 from datetime import timedelta, datetime
 from collections.abc import Callable
+from typing import cast
 
 from iFinDPy import (
     THS_iFinDLogin,
@@ -71,7 +72,7 @@ class IfindDatafeed(BaseDatafeed):
         self.inited = True
         return True
 
-    def query_bar_history(self, req: HistoryRequest, output: Callable = print) -> list[BarData] | None:
+    def query_bar_history(self, req: HistoryRequest, output: Callable = print) -> list[BarData]:
         """查询K线数据"""
         # 检查是否登录
         if not self.inited:
@@ -81,8 +82,12 @@ class IfindDatafeed(BaseDatafeed):
         ifind_exchange: str = EXCHANGE_MAP[req.exchange]
         ifind_symbol: str = f"{req.symbol.upper()}.{ifind_exchange}"
 
+        # HistoryRequest.interval / end 可空；映射不到时 shift 仍为 None，时间仍交给 iFinD
+        interval: Interval = cast(Interval, req.interval)
+        end: datetime = cast(datetime, req.end)
+
         # 计算时间戳平移值
-        shift: timedelta | None = SHIFT_MAP.get(req.interval, None)
+        shift: timedelta | None = SHIFT_MAP.get(interval, None)
 
         # 查询数据内容
         indicators: str = "open;high;low;close;volume;amount;openInterest"
@@ -94,18 +99,18 @@ class IfindDatafeed(BaseDatafeed):
             params += ",CPS:2"    # 前复权（分红再投）
 
         # 日线数据
-        if req.interval == Interval.DAILY:
+        if interval == Interval.DAILY:
             result: THSData = THS_HQ(
                 ifind_symbol,
                 indicators,
                 params,
                 req.start.strftime("%Y-%m-%d %H:%M:%S"),
-                req.end.strftime("%Y-%m-%d %H:%M:%S"),
+                end.strftime("%Y-%m-%d %H:%M:%S"),
             )
         # 日内数据
-        elif req.interval in INTERVAL_MAP:
+        elif interval in INTERVAL_MAP:
             # 生成iFinD数据周期
-            ifind_interval: str = INTERVAL_MAP[req.interval]
+            ifind_interval: str = INTERVAL_MAP[interval]
             params += f",Interval:{ifind_interval}"
 
             result = THS_HF(
@@ -113,7 +118,7 @@ class IfindDatafeed(BaseDatafeed):
                 indicators,
                 params,
                 req.start.strftime("%Y-%m-%d %H:%M:%S"),
-                req.end.strftime("%Y-%m-%d %H:%M:%S"),
+                end.strftime("%Y-%m-%d %H:%M:%S"),
             )
         # 其他周期数据
         else:
