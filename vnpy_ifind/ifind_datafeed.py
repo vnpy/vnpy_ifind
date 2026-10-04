@@ -2,7 +2,7 @@
 
 from datetime import timedelta, datetime
 from collections.abc import Callable
-from typing import cast
+from typing import Any, cast
 
 from iFinDPy import (
     THS_iFinDLogin,
@@ -18,7 +18,7 @@ from vnpy.trader.datafeed import BaseDatafeed
 from vnpy.trader.utility import ZoneInfo
 
 
-CHINA_TZ = ZoneInfo("Asia/Shanghai")
+CHINA_TZ: ZoneInfo = ZoneInfo("Asia/Shanghai")
 
 EXCHANGE_MAP: dict[Exchange, str] = {
     Exchange.SSE: "SH",
@@ -132,6 +132,8 @@ class IfindDatafeed(BaseDatafeed):
         # 解析成K线数据
         bars: list[BarData] = []
 
+        # itertuples 静态类型是 tuple，列字段无法命名
+        tp: Any
         for tp in result.data.itertuples():
             # 生成时间戳
             if ":" in tp.time:
@@ -145,7 +147,7 @@ class IfindDatafeed(BaseDatafeed):
 
             # 获取持仓量
             if tp.openInterest:
-                open_interest = tp.openInterest
+                open_interest: float = tp.openInterest
             else:
                 open_interest = 0
 
