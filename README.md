@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-    <img src ="https://img.shields.io/badge/version-1.1.0-blueviolet.svg"/>
+    <img src ="https://img.shields.io/badge/version-1.2.0-blueviolet.svg"/>
     <img src ="https://img.shields.io/badge/platform-windows-yellow.svg"/>
     <img src ="https://img.shields.io/badge/python-3.10|3.11|3.12|3.13-blue.svg" />
     <img src ="https://img.shields.io/github/license/vnpy/vnpy.svg?color=orange"/>
@@ -13,7 +13,7 @@
 
 ## 说明
 
-基于同花顺iFinDPy接口的1.10.21.4版本开发，支持以下中国金融市场的K线数据（盘后更新）：
+基于同花顺iFinDPy接口的1.10.21.4版本开发，支持以下中国金融市场的K线数据（盘后更新，股票支持前复权）：
 
 * 期货和期货期权：
   * CFFEX：中国金融期货交易所
